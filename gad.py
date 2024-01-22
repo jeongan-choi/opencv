@@ -6,7 +6,7 @@ gender = 0
 age = 0
 
 def highlightFace(net, frame, conf_threshold=0.7):
-    frameOpencvDnn=frame.copy()
+    frameOpencvDnn=frame.copy()     #opencv의 딥러닝 모듈
     frameHeight=frameOpencvDnn.shape[0]
     frameWidth=frameOpencvDnn.shape[1]
     blob=cv2.dnn.blobFromImage(frameOpencvDnn, 1.0, (300, 300), [104, 117, 123], True, False)   # (input 영상, 각 픽셀값의 배율, input 영상 크기 resize, 각 이미지에서 빼야 하는 평균, R과 B 채널 swap 여부)
@@ -27,12 +27,13 @@ def highlightFace(net, frame, conf_threshold=0.7):
             cv2.rectangle(frameOpencvDnn, (x1,y1), (x2,y2), (0,255,0), int(round(frameHeight/150)), 8)
     return frameOpencvDnn,faceBoxes
 
-def capture():
+def capture():      #카메라 캡쳐 및 결과 출력
     parser=argparse.ArgumentParser()
     parser.add_argument('--image')
 
     args=parser.parse_args()
 
+    # 예측에 사용 되는 딥런이 모델과 구성 파일의 경로
     faceProto="opencv_face_detector.pbtxt"
     faceModel="opencv_face_detector_uint8.pb"
     ageProto="age_deploy.prototxt"
@@ -41,7 +42,7 @@ def capture():
     genderModel="gender_net.caffemodel"
 
     # 사전 학습된 가중치
-    MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)
+    MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)    # 이미지를 전처리하기 위한 RGB 평균값
     ageList=['( 0 - 2 )', ' ( 4 - 6 )', ' ( 8 - 12 )', '( 15 - 20 )', '( 25 - 32 )', '( 38 - 43 )', '( 48 - 53 )', '( 60 - 100 )']
     genderList=['Male','Female']
 
@@ -50,7 +51,7 @@ def capture():
     ageNet=cv2.dnn.readNet(ageModel,ageProto)
     genderNet=cv2.dnn.readNet(genderModel,genderProto)
 
-    video = cv2.VideoCapture(args.image if args.image else 0)
+    video = cv2.VideoCapture(args.image if args.image else 0) # 카메라로부터 프레임 받아옴
     padding = 20
     i = 0
 
@@ -97,13 +98,13 @@ port = 12345
 t = threading.Thread(target=capture)
 t.start()
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:    # 특정 ip주소와 포트에서 클라이언트의 연결을 기다리는 소켓 생성
     print("클라이언트 대기")
     s.bind((host, port))
     s.listen()
     while True:
         client_socket, client_addr = s.accept()
-        print("클라이언트 접속")
+        print("클라이언트 접속")                    #클라이언트가 접속하면 성별과 연령정보 전달
         data = bytes(gender + " "+age, 'utf-8')
         print(data)
         client_socket.send(data)
