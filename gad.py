@@ -33,13 +33,13 @@ def capture():      #카메라 캡쳐 및 결과 출력
 
     args=parser.parse_args()
 
-    # 예측에 사용 되는 딥런이 모델과 구성 파일의 경로
-    faceProto="opencv_face_detector.pbtxt"
-    faceModel="opencv_face_detector_uint8.pb"
-    ageProto="age_deploy.prototxt"
-    ageModel="age_net.caffemodel"
-    genderProto="gender_deploy.prototxt"
-    genderModel="gender_net.caffemodel"
+    # 예측에 사용 되는 딥러닝 모델과 구성 파일의 경로
+    faceProto="opencv_face_detector.pbtxt" # 얼굴을 감지하기 위한 파일. 텍스트 형식
+    faceModel="opencv_face_detector_uint8.pb" #  얼굴을 감지하기 위한 파일. 이진 형식
+    ageProto="age_deploy.prototxt" # 연령에 대한 네트워크 구성 설정
+    ageModel="age_net.caffemodel" # 연령에 대한 레이어 매개 변수의 내부 상태를 정의
+    genderProto="gender_deploy.prototxt" # 성별에 대한 네트워크 구성
+    genderModel="gender_net.caffemodel" # 성별에 대한 레이어 매개 변수의 내부 상태를 정의
 
     # 사전 학습된 가중치
     MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)    # 이미지를 전처리하기 위한 RGB 평균값
@@ -75,7 +75,7 @@ def capture():      #카메라 캡쳐 및 결과 출력
             genderNet.setInput(blob)    # Net에 blob 형태의 데이터 넣어줌
             genderPreds=genderNet.forward() # 순방향으로 Net 실행
             global gender
-            gender = genderList[genderPreds[0].argmax()]    # 가장 높은 score값으로 성별 예측
+            gender = genderList[genderPreds[0].argmax()]  # 가장 높은 score값으로 성별 예측
             #print(f'Gender: {gender}')
 
             ageNet.setInput(blob)
